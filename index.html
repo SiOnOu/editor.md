@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+ <meta charset="utf-8" /> 
+ <style> 
+  .div-height{width:300px; height:720px} 
+ </style> 
+ <link rel="stylesheet" href="css/editormd.css" />
+</head> 
+
+<div id="test-editor">
+ <textarea style="display:none;" id="textArea"></textarea>
+</div>
+<div>
+<button type="button" value="save" id="save">Save</button>
+</div>
+<script src="jquery.min.js"></script>
+<script src="editormd.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd("test-editor", {
+            width  : "100%",
+            height : "720px",
+            path   : "lib/"
+        });
+    });
+
+function saveTextAsFile() {
+  var textToWrite = document.getElementById('textArea').innerHTML;
+  var textFileAsBlob = new Blob([ textToWrite ], { type: 'text/plain' });
+  var fileNameToSaveAs = "edit.md";
+
+  var downloadLink = document.createElement("a");
+  downloadLink.download = fileNameToSaveAs;
+  downloadLink.innerHTML = "Download File";
+  if (window.webkitURL != null) {
+    // Chrome allows the link to be clicked without actually adding it to the DOM.
+    downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+  } else {
+    // Firefox requires the link to be added to the DOM before it can be clicked.
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+  }
+
+  downloadLink.click();
+}
+
+var button = document.getElementById('save');
+button.addEventListener('click', saveTextAsFile);
+
+function destroyClickedElement(event) {
+  // remove the link from the DOM
+  document.body.removeChild(event.target);
+}
+</script>
